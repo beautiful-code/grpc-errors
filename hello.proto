@@ -9,6 +9,8 @@ service HelloService {
     // Strict Version responds only to requests which have `Name` length
     // less than 10 characters
     rpc SayHelloStrict(HelloReq) returns (HelloResp) {};
+    // Fail version that runs into an exception
+    rpc SayHelloFail(HelloReq) returns (HelloResp) {};
 }
 
 message HelloReq {

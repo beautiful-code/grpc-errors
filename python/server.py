@@ -23,6 +23,9 @@ class HelloServicer(hello_pb2_grpc.HelloServiceServicer):
 
         return hello_pb2.HelloResp(Result="Hey, {}!".format(request.Name))
 
+    def SayHelloFail(self, request, context):
+        result = 3/0
+
 
 def serve():
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))

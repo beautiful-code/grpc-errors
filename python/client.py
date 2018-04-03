@@ -33,6 +33,16 @@ def run():
     else:
         print(response.Result)
 
+    try:
+        response = stub.SayHelloFail(hello_pb2.HelloReq(
+            Name='Fail name'))
+    except grpc.RpcError as e:
+        print(e.details())
+        status_code = e.code()
+        print(status_code.name)
+        print(status_code.value)
+
+
 
 if __name__ == '__main__':
     run()

@@ -19,7 +19,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='hello.proto',
   package='hello',
   syntax='proto3',
-  serialized_pb=_b('\n\x0bhello.proto\x12\x05hello\"\x18\n\x08HelloReq\x12\x0c\n\x04Name\x18\x01 \x01(\t\"\x1b\n\tHelloResp\x12\x0e\n\x06Result\x18\x01 \x01(\t2v\n\x0cHelloService\x12/\n\x08SayHello\x12\x0f.hello.HelloReq\x1a\x10.hello.HelloResp\"\x00\x12\x35\n\x0eSayHelloStrict\x12\x0f.hello.HelloReq\x1a\x10.hello.HelloResp\"\x00\x62\x06proto3')
+  serialized_pb=_b('\n\x0bhello.proto\x12\x05hello\"\x18\n\x08HelloReq\x12\x0c\n\x04Name\x18\x01 \x01(\t\"\x1b\n\tHelloResp\x12\x0e\n\x06Result\x18\x01 \x01(\t2\xab\x01\n\x0cHelloService\x12/\n\x08SayHello\x12\x0f.hello.HelloReq\x1a\x10.hello.HelloResp\"\x00\x12\x35\n\x0eSayHelloStrict\x12\x0f.hello.HelloReq\x1a\x10.hello.HelloResp\"\x00\x12\x33\n\x0cSayHelloFail\x12\x0f.hello.HelloReq\x1a\x10.hello.HelloResp\"\x00\x62\x06proto3')
 )
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
@@ -133,6 +133,11 @@ try:
           request_serializer=HelloReq.SerializeToString,
           response_deserializer=HelloResp.FromString,
           )
+      self.SayHelloFail = channel.unary_unary(
+          '/hello.HelloService/SayHelloFail',
+          request_serializer=HelloReq.SerializeToString,
+          response_deserializer=HelloResp.FromString,
+          )
 
 
   class HelloServiceServicer(object):
@@ -153,6 +158,13 @@ try:
       context.set_details('Method not implemented!')
       raise NotImplementedError('Method not implemented!')
 
+    def SayHelloFail(self, request, context):
+      """Fail version that runs into an exception
+      """
+      context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+      context.set_details('Method not implemented!')
+      raise NotImplementedError('Method not implemented!')
+
 
   def add_HelloServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -163,6 +175,11 @@ try:
         ),
         'SayHelloStrict': grpc.unary_unary_rpc_method_handler(
             servicer.SayHelloStrict,
+            request_deserializer=HelloReq.FromString,
+            response_serializer=HelloResp.SerializeToString,
+        ),
+        'SayHelloFail': grpc.unary_unary_rpc_method_handler(
+            servicer.SayHelloFail,
             request_deserializer=HelloReq.FromString,
             response_serializer=HelloResp.SerializeToString,
         ),
@@ -188,6 +205,10 @@ try:
       less than 10 characters
       """
       context.code(beta_interfaces.StatusCode.UNIMPLEMENTED)
+    def SayHelloFail(self, request, context):
+      """Fail version that runs into an exception
+      """
+      context.code(beta_interfaces.StatusCode.UNIMPLEMENTED)
 
 
   class BetaHelloServiceStub(object):
@@ -208,6 +229,11 @@ try:
       """
       raise NotImplementedError()
     SayHelloStrict.future = None
+    def SayHelloFail(self, request, timeout, metadata=None, with_call=False, protocol_options=None):
+      """Fail version that runs into an exception
+      """
+      raise NotImplementedError()
+    SayHelloFail.future = None
 
 
   def beta_create_HelloService_server(servicer, pool=None, pool_size=None, default_timeout=None, maximum_timeout=None):
@@ -218,14 +244,17 @@ try:
     generated only to ease transition from grpcio<0.15.0 to grpcio>=0.15.0"""
     request_deserializers = {
       ('hello.HelloService', 'SayHello'): HelloReq.FromString,
+      ('hello.HelloService', 'SayHelloFail'): HelloReq.FromString,
       ('hello.HelloService', 'SayHelloStrict'): HelloReq.FromString,
     }
     response_serializers = {
       ('hello.HelloService', 'SayHello'): HelloResp.SerializeToString,
+      ('hello.HelloService', 'SayHelloFail'): HelloResp.SerializeToString,
       ('hello.HelloService', 'SayHelloStrict'): HelloResp.SerializeToString,
     }
     method_implementations = {
       ('hello.HelloService', 'SayHello'): face_utilities.unary_unary_inline(servicer.SayHello),
+      ('hello.HelloService', 'SayHelloFail'): face_utilities.unary_unary_inline(servicer.SayHelloFail),
       ('hello.HelloService', 'SayHelloStrict'): face_utilities.unary_unary_inline(servicer.SayHelloStrict),
     }
     server_options = beta_implementations.server_options(request_deserializers=request_deserializers, response_serializers=response_serializers, thread_pool=pool, thread_pool_size=pool_size, default_timeout=default_timeout, maximum_timeout=maximum_timeout)
@@ -240,14 +269,17 @@ try:
     generated only to ease transition from grpcio<0.15.0 to grpcio>=0.15.0"""
     request_serializers = {
       ('hello.HelloService', 'SayHello'): HelloReq.SerializeToString,
+      ('hello.HelloService', 'SayHelloFail'): HelloReq.SerializeToString,
       ('hello.HelloService', 'SayHelloStrict'): HelloReq.SerializeToString,
     }
     response_deserializers = {
       ('hello.HelloService', 'SayHello'): HelloResp.FromString,
+      ('hello.HelloService', 'SayHelloFail'): HelloResp.FromString,
       ('hello.HelloService', 'SayHelloStrict'): HelloResp.FromString,
     }
     cardinalities = {
       'SayHello': cardinality.Cardinality.UNARY_UNARY,
+      'SayHelloFail': cardinality.Cardinality.UNARY_UNARY,
       'SayHelloStrict': cardinality.Cardinality.UNARY_UNARY,
     }
     stub_options = beta_implementations.stub_options(host=host, metadata_transformer=metadata_transformer, request_serializers=request_serializers, response_deserializers=response_deserializers, thread_pool=pool, thread_pool_size=pool_size)

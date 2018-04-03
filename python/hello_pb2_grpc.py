@@ -24,6 +24,11 @@ class HelloServiceStub(object):
         request_serializer=hello__pb2.HelloReq.SerializeToString,
         response_deserializer=hello__pb2.HelloResp.FromString,
         )
+    self.SayHelloFail = channel.unary_unary(
+        '/hello.HelloService/SayHelloFail',
+        request_serializer=hello__pb2.HelloReq.SerializeToString,
+        response_deserializer=hello__pb2.HelloResp.FromString,
+        )
 
 
 class HelloServiceServicer(object):
@@ -44,6 +49,13 @@ class HelloServiceServicer(object):
     context.set_details('Method not implemented!')
     raise NotImplementedError('Method not implemented!')
 
+  def SayHelloFail(self, request, context):
+    """Fail version that runs into an exception
+    """
+    context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+    context.set_details('Method not implemented!')
+    raise NotImplementedError('Method not implemented!')
+
 
 def add_HelloServiceServicer_to_server(servicer, server):
   rpc_method_handlers = {
@@ -54,6 +66,11 @@ def add_HelloServiceServicer_to_server(servicer, server):
       ),
       'SayHelloStrict': grpc.unary_unary_rpc_method_handler(
           servicer.SayHelloStrict,
+          request_deserializer=hello__pb2.HelloReq.FromString,
+          response_serializer=hello__pb2.HelloResp.SerializeToString,
+      ),
+      'SayHelloFail': grpc.unary_unary_rpc_method_handler(
+          servicer.SayHelloFail,
           request_deserializer=hello__pb2.HelloReq.FromString,
           response_serializer=hello__pb2.HelloResp.SerializeToString,
       ),
