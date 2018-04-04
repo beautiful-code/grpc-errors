@@ -27,6 +27,10 @@ def run():
         # should print `(3, 'invalid argument')`
         print(status_code.value)
         # want to do some specific action based on the error?
+
+        # Send an email to the developers with the details of the exception.
+        # ex: trace_id, environment, calling service, called service,
+        # error message received, etc..
         if grpc.StatusCode.INVALID_ARGUMENT == status_code:
             # do your stuff here
             pass
